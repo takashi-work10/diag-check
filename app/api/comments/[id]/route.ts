@@ -1,9 +1,9 @@
 // app/comments/[id]/route.ts
 
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -37,12 +37,19 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   return NextResponse.json(updatedComment);
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function DELETE(
+  request: NextRequest,
+  { params, searchParams }: { params: { id: string }; searchParams?: URLSearchParams }
+): Promise<NextResponse> {
+  // 使わないが、型上の要件を満たすため、明示的に使う（例えば、void 演算子で使用済みとする）
+  void searchParams;
+  
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
-
+  
   // オーナーチェック
   const comment = await prisma.comment.findUnique({
     where: { id: params.id },
@@ -50,13 +57,16 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   if (!comment) {
     return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
   }
-  if (comment.authorId !== (await prisma.user.findUnique({ where: { email: session.user.email } }))?.id) {
+  if (
+    comment.authorId !==
+    (await prisma.user.findUnique({ where: { email: session.user.email } }))?.id
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
-
+  
   const deletedComment = await prisma.comment.delete({
     where: { id: params.id },
   });
-
+  
   return NextResponse.json(deletedComment);
 }

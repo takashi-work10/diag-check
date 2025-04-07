@@ -16,6 +16,7 @@ export async function PATCH(request: Request, context: { params: { id: string } 
         });
         return NextResponse.json(updatedPost);
     } catch (error) {
+        console.error('PATCH /api/posts/[id] error:', error); 
         return NextResponse.json({ error: 'Failed to update post'}, { status: 500 });
     }
 }

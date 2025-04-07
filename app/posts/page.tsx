@@ -56,7 +56,7 @@ export default function PostPage() {
       const res = await axios.patch(`/api/posts/${id}`, { title, content });
       return res.data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       setEditingPostId(null);
     },

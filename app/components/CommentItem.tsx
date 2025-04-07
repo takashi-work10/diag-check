@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 type Comment = {
   id: string;
@@ -55,7 +56,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
   return (
     <div style={{ paddingLeft: comment.parentCommentId ? '2rem' : '0', marginTop: '1rem' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <img
+        <Image
           src={comment.author.image || '/default-avatar.png'}
           alt="avatar"
           style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '8px' }}
