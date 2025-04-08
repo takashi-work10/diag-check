@@ -1,42 +1,50 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function PATCH(request: Request, context: { params: { id: string } }) {
-    
-    const params = await Promise.resolve(context.params);
-    const postId = params.id;
-    const body = await request.json();
-    const { title, content } = body;
-
-    try {
-        const updatedPost = await prisma.post.update({
-            where: { id: postId },
-            data: { title, content },
-            include: { author: true },
-        });
-        return NextResponse.json(updatedPost);
-    } catch (error) {
-        console.error('PATCH /api/posts/[id] error:', error); 
-        return NextResponse.json({ error: 'Failed to update post'}, { status: 500 });
-    }
+function extractIdFromPathname(pathname: string): string | null {
+  const segments = pathname.split('/');
+  // URL の末尾が空文字の場合など、厳密にチェックしてください。
+  const id = segments[segments.length - 1] || segments[segments.length - 2];
+  return id || null;
 }
 
-export async function DELETE(request: Request, context: { params: { id: string } }) {
-    const params = await Promise.resolve(context.params);
-    const postId = params.id;
+export async function PATCH(request: NextRequest): Promise<NextResponse> {
+  const id = extractIdFromPathname(request.nextUrl.pathname);
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+  }
 
-    try {
-        await prisma.comment.deleteMany({
-            where: { postId },
-        });
+  const body = await request.json();
+  const { title, content } = body;
+  try {
+    const updatedPost = await prisma.post.update({
+      where: { id },
+      data: { title, content },
+      include: { author: true },
+    });
+    return NextResponse.json(updatedPost);
+  } catch (error) {
+    console.error('PATCH /api/posts/[id] error:', error);
+    return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
+  }
+}
 
-        const deletedPost = await prisma.post.delete({
-            where: { id: postId },
-        });
-        
-        return NextResponse.json(deletedPost);
-    } catch (error) {
-        console.error('DELETE /api/posts/[id] error:', error);
-        return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
-    }
+export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  const id = extractIdFromPathname(request.nextUrl.pathname);
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+  }
+
+  try {
+    await prisma.comment.deleteMany({
+      where: { postId: id },
+    });
+    const deletedPost = await prisma.post.delete({
+      where: { id },
+    });
+    return NextResponse.json(deletedPost);
+  } catch (error) {
+    console.error('DELETE /api/posts/[id] error:', error);
+    return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
+  }
 }
