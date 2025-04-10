@@ -21,6 +21,8 @@ services:
       - NODE_ENV=development
     depends_on:
       - mongo
+    volumes:
+      - ./:/app
 
 volumes:
   mongo_data:
