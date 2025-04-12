@@ -1,4 +1,4 @@
-// constants/patternDetails.ts
+// constants/pattern-details.ts
 
 export type PatternDetail = {
 intro: string;

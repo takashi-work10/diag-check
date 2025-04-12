@@ -44,5 +44,19 @@ model Comment {
   authorId  String   @db.ObjectId
 }
 
+enum Pattern {
+  A
+  B
+  C
+  D
+}
+model DiagnosisResult {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  pattern    Pattern
+  answers    Int[]
+  createdAt  DateTime  @default(now())
+}
+
+
 
 

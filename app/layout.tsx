@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Providers from './providers';
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 
 export const metadata: Metadata = {
@@ -16,10 +18,10 @@ export default function RootLayout({
     <html lang="ja">
       <body>
       <Providers>
-      <header>
-      </header>
+      <Header />
           {children}
       </Providers>
+      <Footer />
       </body>
     </html>
   );

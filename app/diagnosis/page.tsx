@@ -50,8 +50,9 @@ export default function Diagnosis() {
     };
 
     return (
-        <Container
+        <Container disableGutters maxWidth={false}
         sx={{
+            px: 0,
             textAlign: "center",
             background: "linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%)",
             minHeight: "100vh",

@@ -5,7 +5,7 @@
 import React from "react";
 import {Radio, RadioGroup, SvgIcon} from "@mui/material";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import { defaultRatingOptions, RatingOption } from "../constants/ratingOptions";
+import { defaultRatingOptions, RatingOption } from "../constants/rating-options";
 
 // 各ラジオボタンのオプション
 
