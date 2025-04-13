@@ -59,7 +59,9 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
         <Image
           src={comment.author.image || '/default-avatar.png'}
           alt="avatar"
-          style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '8px' }}
+          width={40}
+          height={40}
+          style={{ borderRadius: '50%', marginRight: '8px' }}
         />
         <div>
           <strong>{comment.author.name}</strong>
