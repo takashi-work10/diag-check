@@ -6,6 +6,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Comments from '../components/Comments';
 import CommentCount from '../components/CommentCount';
+import { Box, Paper, Typography, TextField, Button, Avatar, IconButton, } from '@mui/material';
+import ReplyIcon from '@mui/icons-material/Reply';
 
 type Post = {
   id: string;
@@ -16,11 +18,13 @@ type Post = {
     id: string;
     name: string;
     email: string;
+    image?: string;
   };
 };
 
 export default function PostPage() {
   const { data: session } = useSession();
+  console.log('session:', session);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -48,6 +52,8 @@ export default function PostPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      setTitle('');
+      setContent('');
     },
   });
 
@@ -59,6 +65,8 @@ export default function PostPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       setEditingPostId(null);
+      setEditTitle('');
+      setEditContent('');
     },
   });
 
@@ -99,117 +107,212 @@ export default function PostPage() {
   if (isError) return <div>Error fetching posts</div>;
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h1>投稿作成</h1>
-      <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>タイトル: </label>
-          <input
-            type="text"
+    <Box
+      sx={{
+        minHeight: '100vh',
+        px: 2,
+        py: 4,
+        background: 'linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%)',
+        fontFamily: "'Comic Sans MS', cursive, sans-serif",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      {/* 投稿作成フォーム */}
+      <Typography variant="h3" sx={{ fontSize: 36, color: '#FF6F91', mb: 4, mt: 5 }}>
+        投稿作成
+      </Typography>
+      <Paper
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          p: 4,
+          mb: 6,
+          width: '100%',
+          maxWidth: 600,
+          borderRadius: '20px',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+          backgroundColor: '#fff',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            label="タイトル"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={{ width: '300px' }}
+            fullWidth
           />
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>内容: </label>
-          <textarea
+          <TextField
+            label="内容"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            fullWidth
+            multiline
             rows={4}
-            style={{ width: '300px' }}
-          ></textarea>
-        </div>
-        <button type="submit">投稿する</button>
-      </form>
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              mt: 2,
+              backgroundColor: '#CF9FFF',
+              color: '#fff',
+              borderRadius: '30px',
+              fontSize: '16px',
+              textTransform: 'none',
+            }}
+          >
+            投稿する
+          </Button>
+        </Box>
+      </Paper>
 
-      {/* 編集フォーム：編集対象の投稿がある場合に表示 */}
+      {/* 編集フォーム */}
       {editingPostId && (
-        <div style={{ marginBottom: '2rem', border: '1px solid #ccc', padding: '1rem' }}>
-          <h2>投稿編集</h2>
-          <form onSubmit={handleUpdate}>
-            <div style={{ marginBottom: '1rem' }}>
-              <label>タイトル: </label>
-              <input
-                type="text"
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                style={{ width: '300px' }}
-              />
-            </div>
-            <div style={{ marginBottom: '1rem' }}>
-              <label>内容: </label>
-              <textarea
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                rows={4}
-                style={{ width: '300px' }}
-              ></textarea>
-            </div>
-            <button type="submit">更新する</button>
-            <button type="button" onClick={() => setEditingPostId(null)}>
-              キャンセル
-            </button>
-          </form>
-        </div>
+        <Paper
+          component="form"
+          onSubmit={handleUpdate}
+          sx={{
+            p: 4,
+            mb: 6,
+            width: '100%',
+            maxWidth: 600,
+            borderRadius: '20px',
+            boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+            backgroundColor: '#fff',
+          }}
+        >
+          <Typography variant="h5" sx={{ mb: 3 }}>
+            投稿編集
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="タイトル"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="内容"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+            />
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{ backgroundColor: '#CF9FFF', color: '#fff', textTransform: 'none' }}
+              >
+                更新する
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setEditingPostId(null)}
+                sx={{ textTransform: 'none' }}
+              >
+                キャンセル
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
       )}
 
-      <h2>投稿一覧</h2>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {posts &&
-          posts.map((post) => (
-            <li
-              key={post.id}
-              style={{
-                marginBottom: '1rem',
-                borderBottom: '1px solid #ccc',
-                paddingBottom: '0.5rem',
-              }}
-            >
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-              <small>
-                By: {post.author.name} ({post.author.email}) -{' '}
+      {/* 投稿一覧 */}
+      <Typography variant="h3" sx={{ fontSize: 36, color: '#FF6F91', mb: 4 }}>
+        投稿一覧
+      </Typography>
+      <Box sx={{ width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {posts!.map((post) => (
+          <Paper
+            key={post.id}
+            sx={{
+              p: 4,
+              borderRadius: '20px',
+              boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+              backgroundColor: '#fff',
+            }}
+          >
+            {/* 投稿タイトル */}
+            <Typography variant="h5" sx={{ mb: 2 }}>
+              {post.title}
+            </Typography>
+            {/* 投稿本文 */}
+            <Typography variant="body1" sx={{ color: '#555', mb: 3 }}>
+              {post.content}
+            </Typography>
+
+            {/* 著者情報 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Avatar sx={{ width: 32, height: 32, bgcolor: '#CF9FFF' }}>
+                {post.author.name.charAt(0)}
+              </Avatar>
+              <Typography variant="body2" color="textSecondary">
+                By: {post.author.name} ({post.author.email}) –{' '}
                 {new Date(post.createdAt).toLocaleString()}
-              </small>
-              <div style={{ marginTop: '0.5rem' }}>
-                <button
-                  onClick={() => {
-                    setEditingPostId(post.id);
-                    setEditTitle(post.title);
-                    setEditContent(post.content);
-                  }}
+              </Typography>
+            </Box>
+
+            {/* 編集・削除ボタン */}
+            {session?.user?.id === post.author.id && (
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setEditingPostId(post.id);
+                  setEditTitle(post.title);
+                  setEditContent(post.content);
+                }}
+              >
+                <ReplyIcon fontSize="small" />
+              </IconButton>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => deletePostMutation.mutate(post.id)}
+                sx={{ textTransform: 'none' }}
+              >
+                削除
+              </Button>
+            </Box>
+            )}
+
+            {/* コメント表示切替 */}
+            <Box sx={{ mb: 2 }}>
+              {expandedReplies.includes(post.id) ? (
+                <Button
+                  size="small"
+                  onClick={() =>
+                    setExpandedReplies((prev) => prev.filter((pid) => pid !== post.id))
+                  }
+                  sx={{ textTransform: 'none' }}
                 >
-                  編集
-                </button>
-                <button onClick={() => deletePostMutation.mutate(post.id)}>
-                  削除
-                </button>
-              </div>
-              <div style={{ marginTop: '0.5rem' }}>
-                {expandedReplies.includes(post.id) ? (
-                  <>
-                    <button
-                      onClick={() =>
-                        setExpandedReplies(expandedReplies.filter((pid) => pid !== post.id))
-                      }
-                    >
-                      返信を隠す
-                    </button>
-                    {/* コメント（返信）一覧を表示 */}
-                    <Comments postId={post.id} />
-                  </>
-                ) : (
-                  <button
-                    onClick={() => setExpandedReplies([...expandedReplies, post.id])}
-                  >
-                    <CommentCount postId={post.id} /> 件の返信
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
-      </ul>
-    </div>
+                  コメントを隠す
+                </Button>
+              ) : (
+                <Button
+                  size="small"
+                  onClick={() => setExpandedReplies((prev) => [...prev, post.id])}
+                  sx={{ textTransform: 'none' }}
+                >
+                  <CommentCount postId={post.id} /> 件のコメント
+                </Button>
+              )}
+            </Box>
+
+            {/* コメント機能 */}
+            {expandedReplies.includes(post.id) && <Comments postId={post.id} />}
+          </Paper>
+        ))}
+      </Box>
+    </Box>
   );
 }
+
+
+
+
+

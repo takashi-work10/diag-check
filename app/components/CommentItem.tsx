@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { Box, Avatar, Typography, TextField, Button } from '@mui/material';
 
 type Comment = {
   id: string;
@@ -54,59 +55,105 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
   };
 
   return (
-    <div style={{ paddingLeft: comment.parentCommentId ? '2rem' : '0', marginTop: '1rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Image
-          src={comment.author.image || '/default-avatar.png'}
-          alt="avatar"
-          width={40}
-          height={40}
-          style={{ borderRadius: '50%', marginRight: '8px' }}
-        />
-        <div>
-          <strong>{comment.author.name}</strong>
-          <span style={{ marginLeft: '8px', fontSize: '0.8em', color: '#555' }}>
+    <Box sx={{ pl: comment.parentCommentId ? 4 : 0, mb: 3 }}>
+      {/* ヘッダー：アバター＋名前＋日時 */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Avatar sx={{ width: 40, height: 40 }} src={comment.author.image}>
+          {!comment.author.image && comment.author.name.charAt(0)}
+        </Avatar>
+        <Box>
+          <Typography variant="subtitle2">{comment.author.name}</Typography>
+          <Typography variant="caption" color="text.secondary">
             {new Date(comment.createdAt).toLocaleString()}
-          </span>
-        </div>
-      </div>
-      <p style={{ marginTop: '0.5rem' }}>{comment.content}</p>
-      <div>
-        <button onClick={() => setReplying(!replying)}>
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* 本文 */}
+      <Typography variant="body1" sx={{ mt: 1 }}>
+        {comment.content}
+      </Typography>
+
+      {/* 操作ボタン */}
+      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+        <Button
+          size="small"
+          onClick={() => setReplying((f) => !f)}
+          sx={{ textTransform: 'none' }}
+        >
           {replying ? '返信フォームを隠す' : '返信'}
-        </button>
-        <button>いいね</button>
-      </div>
+        </Button>
+        <Button size="small" sx={{ textTransform: 'none' }}>
+          いいね
+        </Button>
+      </Box>
+
+      {/* 返信フォーム */}
       {replying && (
-        <form onSubmit={handleReplySubmit} style={{ marginTop: '0.5rem' }}>
-          <textarea
+        <Box
+          component="form"
+          onSubmit={handleReplySubmit}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            mt: 2,
+          }}
+        >
+          <TextField
+            multiline
+            rows={2}
+            placeholder="返信を入力…"
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            rows={2}
-            style={{ width: '100%', maxWidth: '600px' }}
-            placeholder="返信を入力..."
+            fullWidth
+            size="small"
           />
-          <br />
-          <button type="submit">返信する</button>
-          <button type="button" onClick={() => setReplying(false)}>
-            キャンセル
-          </button>
-        </form>
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                backgroundColor: '#CF9FFF',
+                color: '#fff',
+                textTransform: 'none',
+              }}
+            >
+              返信する
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setReplying(false)}
+              sx={{ textTransform: 'none' }}
+            >
+              キャンセル
+            </Button>
+          </Box>
+        </Box>
       )}
+
+      {/* 子返信のトグル */}
       {comment.replies && comment.replies.length > 0 && (
-        <div style={{ marginTop: '1rem' }}>
-          <button onClick={() => setShowReplies(!showReplies)}>
-            {showReplies ? '返信を隠す' : `V ${comment.replies.length} 件の返信`}
-          </button>
-          {showReplies && (
-            <div>
-              {comment.replies.map((reply) => (
-                <CommentItem key={reply.id} comment={reply} postId={postId} />
-              ))}
-            </div>
-          )}
-        </div>
+        <Box sx={{ mt: 2 }}>
+          <Button
+            size="small"
+            onClick={() => setShowReplies((f) => !f)}
+            sx={{ textTransform: 'none' }}
+          >
+            {showReplies
+              ? '返信を隠す'
+              : `V ${comment.replies.length} 件の返信`}
+          </Button>
+          {showReplies &&
+            comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                postId={postId}
+              />
+            ))}
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

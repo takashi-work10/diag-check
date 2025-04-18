@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
 function extractIdFromPathname(pathname: string): string | null {
   const segments = pathname.split('/');
@@ -9,9 +11,24 @@ function extractIdFromPathname(pathname: string): string | null {
 }
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
   const id = extractIdFromPathname(request.nextUrl.pathname);
   if (!id) {
     return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+  }
+  const post = await prisma.post.findUnique({
+    where: { id },
+    select: { authorId: true },
+  })
+  if (!post) {
+    return NextResponse.json({ error: 'Not Found' }, { status:404 })
+  }
+  if (post.authorId !== session.user.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const body = await request.json();
@@ -30,9 +47,26 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 }
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const id = extractIdFromPathname(request.nextUrl.pathname);
   if (!id) {
     return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id },
+    select: { authorId: true },
+  });
+  if (!post) {
+    return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+  }
+
+  if (post.authorId !== session.user.id) {
+    return NextResponse.json({ error: 'Forbidden'}, { status: 403 });
   }
 
   try {

@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { Typography } from '@mui/material';
 
 export default function CommentCount({ postId }: { postId: string }) {
   const { data: comments, isLoading, isError } = useQuery({
@@ -12,8 +13,8 @@ export default function CommentCount({ postId }: { postId: string }) {
     },
   });
 
-  if (isLoading) return <span>...</span>;
-  if (isError) return <span>0</span>;
+  if (isLoading) return <Typography component="span">...</Typography>;
+  if (isError)   return <Typography component="span">0</Typography>;
 
-  return <span>{comments?.length || 0}</span>;
+  return <Typography component="span">{comments.length}</Typography>;
 }

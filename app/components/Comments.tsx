@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import CommentItem from './CommentItem';
+import { Box, Paper, Typography, TextField, Button } from '@mui/material';
 
 type Comment = {
   id: string;
@@ -68,32 +69,61 @@ export default function Comments({ postId }: { postId: string }) {
   if (isError) return <div>コメントの取得に失敗しました</div>;
 
   return (
-    <div style={{ marginTop: '2rem' }}>
-      <h3>コメント</h3>
-      {/* 新規コメント入力フォーム */}
-      <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
-        <textarea
-          value={newCommentText}
-          onChange={(e) => setNewCommentText(e.target.value)}
-          rows={3}
-          style={{ width: '100%', maxWidth: '600px' }}
-          placeholder="コメントを入力してください..."
-        ></textarea>
-        <br />
-        <button type="submit">コメントする</button>
-      </form>
+    <Box sx={{ mt: 4, width: '100%', maxWidth: 600 }}>
+      <Paper
+        sx={{
+          p: 3,
+          mb: 4,
+          borderRadius: '20px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          backgroundColor: '#fff',
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          コメント
+        </Typography>
 
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {/* 新規コメント入力フォーム */}
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}
+        >
+          <TextField
+            multiline
+            rows={3}
+            placeholder="コメントを入力してください…"
+            value={newCommentText}
+            onChange={(e) => setNewCommentText(e.target.value)}
+            fullWidth
+            size="small"
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                backgroundColor: '#CF9FFF',
+                color: '#fff',
+                textTransform: 'none',
+              }}
+            >
+              コメントする
+            </Button>
+          </Box>
+        </Box>
+
+        {/* コメント一覧 */}
         {topLevelComments.length > 0 ? (
           topLevelComments.map((comment) => (
-            <li key={comment.id} style={{ marginBottom: '1rem' }}>
-              <CommentItem comment={comment} postId={postId} />
-            </li>
+            <CommentItem key={comment.id} comment={comment} postId={postId} />
           ))
         ) : (
-          <li>コメントはまだありません。</li>
+          <Typography variant="body2" color="text.secondary">
+            まだコメントがありません。
+          </Typography>
         )}
-      </ul>
-    </div>
+      </Paper>
+    </Box>
   );
 }
