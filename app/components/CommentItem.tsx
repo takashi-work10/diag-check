@@ -58,9 +58,40 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
     <Box sx={{ pl: comment.parentCommentId ? 4 : 0, mb: 3 }}>
       {/* ヘッダー：アバター＋名前＋日時 */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Avatar sx={{ width: 40, height: 40 }} src={comment.author.image}>
-          {!comment.author.image && comment.author.name.charAt(0)}
-        </Avatar>
+      {comment.author.image ? (
+          <Box
+            sx={{
+              position: 'relative',
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              overflow: 'hidden',
+            }}
+          >
+            <Image
+              src={comment.author.image}
+              alt={comment.author.name}
+              fill
+              style={{ objectFit: 'cover' }}
+            />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              backgroundColor: '#CF9FFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              fontWeight: 'bold',
+            }}
+          >
+            {comment.author.name.charAt(0)}
+          </Box>
+        )}
         <Box>
           <Typography variant="subtitle2">{comment.author.name}</Typography>
           <Typography variant="caption" color="text.secondary">

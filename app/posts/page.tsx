@@ -8,6 +8,7 @@ import Comments from '../components/Comments';
 import CommentCount from '../components/CommentCount';
 import { Box, Paper, Typography, TextField, Button, Avatar, IconButton, } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
+import Image from 'next/image';
 
 type Post = {
   id: string;
@@ -247,9 +248,28 @@ export default function PostPage() {
 
             {/* 著者情報 */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            {post.author.image ? (
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: 32,
+                    height: 32,
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Image
+                    src={post.author.image}
+                    alt={post.author.name}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
+                </Box>
+              ) : (
               <Avatar sx={{ width: 32, height: 32, bgcolor: '#CF9FFF' }}>
                 {post.author.name.charAt(0)}
               </Avatar>
+              )}
               <Typography variant="body2" color="textSecondary">
                 By: {post.author.name} ({post.author.email}) –{' '}
                 {new Date(post.createdAt).toLocaleString()}
