@@ -25,8 +25,7 @@ type Post = {
 };
 
 export default function PostPage() {
-  const { data: session, status } = useSession();
-  console.log('session status:', status);
+  const { data: session } = useSession();
   console.log('session data:', session);
 
   const [title, setTitle] = useState('');
@@ -107,8 +106,7 @@ export default function PostPage() {
     }
   };
 
-  if (status === 'loading') return <div>Loading session…</div>;
-  if (status === 'unauthenticated') return <div>ログインしてください。</div>;
+  if (!session) return <div>ログインしてください。</div>;
   if (isLoading) return <div>Loading posts...</div>;
   if (isError) return <div>Error fetching posts</div>;
 
