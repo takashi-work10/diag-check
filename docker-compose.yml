@@ -22,7 +22,11 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./:/app
+      - ./:/app:cached
+      - next_data:/app/.next
+      - node_data:/app/node_modules
 
 volumes:
   mongo_data:
+  next_data:
+  node_data:

@@ -230,7 +230,7 @@ export default function PostPage() {
         投稿一覧
       </Typography>
       <Box sx={{ width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {posts!.map((post) => (
+        {(posts ?? []).map((post) => (
           <Paper
             key={post.id}
             sx={{

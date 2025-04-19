@@ -5,12 +5,20 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 
 export async function GET() {
-    const posts = await prisma.post.findMany({
-        include: { author: true },
-        orderBy: { createdAt: 'desc' },
-    });
-    return NextResponse.json(posts);
-}
+    try {
+        const posts = await prisma.post.findMany({
+            include: { author: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        return NextResponse.json(posts);
+        } catch (err: any) {
+        console.error('[GET /api/posts] error:', err);
+        return NextResponse.json(
+            { error: err.message || 'Failed to fetch posts' },
+            { status: 500 }
+        );
+        }
+    }
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
