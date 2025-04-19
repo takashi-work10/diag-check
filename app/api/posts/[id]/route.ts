@@ -12,7 +12,7 @@ function extractIdFromPathname(pathname: string): string | null {
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
-  if (!session?.user) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   
@@ -22,12 +22,12 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
   }
   const post = await prisma.post.findUnique({
     where: { id },
-    select: { authorId: true },
+    select: { author: true },
   })
   if (!post) {
     return NextResponse.json({ error: 'Not Found' }, { status:404 })
   }
-  if (post.authorId !== session.user.id) {
+  if (post.author.email !== session.user.email) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -59,13 +59,13 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
 
   const post = await prisma.post.findUnique({
     where: { id },
-    select: { authorId: true },
+    select: { author: true },
   });
   if (!post) {
     return NextResponse.json({ error: 'Not Found' }, { status: 404 });
   }
 
-  if (post.authorId !== session.user.id) {
+  if (post.author.email !== session.user.email) {
     return NextResponse.json({ error: 'Forbidden'}, { status: 403 });
   }
 

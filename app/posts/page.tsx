@@ -7,7 +7,8 @@ import { useSession } from 'next-auth/react';
 import Comments from '../components/Comments';
 import CommentCount from '../components/CommentCount';
 import { Box, Paper, Typography, TextField, Button, Avatar, IconButton, } from '@mui/material';
-import ReplyIcon from '@mui/icons-material/Reply';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Image from 'next/image';
 
 type Post = {
@@ -24,8 +25,12 @@ type Post = {
 };
 
 export default function PostPage() {
-  const { data: session } = useSession();
-  console.log('session:', session);
+  const { data: session, status } = useSession();
+  console.log('session status:', status);
+  console.log('session data:', session);
+
+  if (status === 'loading') return <div>Loading session…</div>;
+  if (status === 'unauthenticated') return <div>ログインしてください。</div>;
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -277,21 +282,23 @@ export default function PostPage() {
             </Box>
 
             {/* 編集・削除ボタン */}
-            {session?.user?.id === post.author.id && (
+            {session?.user?.email === post.author.email && (
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-              <IconButton
+              <Button
                 size="small"
+                startIcon={<EditIcon fontSize="small" />}
+                sx={{ textTransform: 'none' }}
                 onClick={() => {
                   setEditingPostId(post.id);
                   setEditTitle(post.title);
                   setEditContent(post.content);
                 }}
               >
-                <ReplyIcon fontSize="small" />
-              </IconButton>
+                編集
+              </Button>
               <Button
                 size="small"
-                variant="outlined"
+                startIcon={<DeleteIcon fontSize="small" />}
                 onClick={() => deletePostMutation.mutate(post.id)}
                 sx={{ textTransform: 'none' }}
               >
