@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Comments from '../components/Comments';
 import CommentCount from '../components/CommentCount';
-import { Box, Paper, Typography, TextField, Button, Avatar, IconButton, } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, Avatar } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Image from 'next/image';
@@ -29,8 +29,6 @@ export default function PostPage() {
   console.log('session status:', status);
   console.log('session data:', session);
 
-  if (status === 'loading') return <div>Loading session…</div>;
-  if (status === 'unauthenticated') return <div>ログインしてください。</div>;
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -109,6 +107,8 @@ export default function PostPage() {
     }
   };
 
+  if (status === 'loading') return <div>Loading session…</div>;
+  if (status === 'unauthenticated') return <div>ログインしてください。</div>;
   if (isLoading) return <div>Loading posts...</div>;
   if (isError) return <div>Error fetching posts</div>;
 
