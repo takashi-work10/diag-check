@@ -11,12 +11,10 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
         });
         return NextResponse.json(posts);
-        } catch (err: any) {
+        } catch (err: unknown) {
         console.error('[GET /api/posts] error:', err);
-        return NextResponse.json(
-            { error: err.message || 'Failed to fetch posts' },
-            { status: 500 }
-        );
+        const message = err instanceof Error ? err.message : 'Failed to fetch posts';
+        return NextResponse.json({ error: message }, { status: 500 });
         }
     }
 
