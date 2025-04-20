@@ -1,6 +1,7 @@
+// app/components/Comments.tsx
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
@@ -20,24 +21,35 @@ type Comment = {
   parentCommentId?: string | null;
 };
 
+// 子コメントの配列を含む型
+type NestedComment = Comment & { replies: NestedComment[] };
+
 export default function Comments({ postId }: { postId: string }) {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
 
   // コメント一覧取得
-  const { data: comments, isLoading, isError } = useQuery<Comment[]>({
+  const { data: comments = [], isLoading, isError } = useQuery<Comment[]>({
     queryKey: ['comments', postId],
     queryFn: async () => {
-      const res = await axios.get<Comment[]>(
-        `/api/comments?postId=${postId}`
-      );
+      const res = await axios.get<Comment[]>(`/api/comments?postId=${postId}`);
       return res.data;
     },
   });
 
-  // デバッグログ
-  useEffect(() => {
-    console.log('Fetched comments:', comments);
+  // 階層化（親子関係を組み立て）
+  const nestedComments = useMemo<NestedComment[]>(() => {
+    const map = new Map<string, NestedComment>();
+    comments.forEach(c =>
+      map.set(c.id, { ...c, replies: [] })
+    );
+    map.forEach(c => {
+      if (c.parentCommentId) {
+        const parent = map.get(c.parentCommentId);
+        parent?.replies.push(c);
+      }
+    });
+    return Array.from(map.values()).filter(c => !c.parentCommentId);
   }, [comments]);
 
   // 新規コメント作成
@@ -67,7 +79,7 @@ export default function Comments({ postId }: { postId: string }) {
   };
 
   if (isLoading) return <div>コメント読み込み中...</div>;
-  if (isError)   return <div>コメントの取得に失敗しました</div>;
+  if (isError) return <div>コメントの取得に失敗しました</div>;
 
   return (
     <Box sx={{ mt: 4, width: '100%', maxWidth: 600 }}>
@@ -99,12 +111,13 @@ export default function Comments({ postId }: { postId: string }) {
             fullWidth
             size="small"
             required
+            slotProps={{ htmlInput: { maxLength: 500 } }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               type="submit"
               variant="contained"
-              disabled={!newCommentText.trim()}
+              disabled={!newCommentText.trim() || createCommentMutation.status === 'pending'}
               sx={{
                 backgroundColor: '#CF9FFF',
                 color: '#fff',
@@ -116,14 +129,10 @@ export default function Comments({ postId }: { postId: string }) {
           </Box>
         </Box>
 
-        {/* コメント一覧（すべて同一階層で表示） */}
-        {comments && comments.length > 0 ? (
-          comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              postId={postId}
-            />
+        {/* 階層化したコメント一覧 */}
+        {nestedComments.length > 0 ? (
+          nestedComments.map((comment) => (
+            <CommentItem key={comment.id} comment={comment} postId={postId} />
           ))
         ) : (
           <Typography variant="body2" color="text.secondary">

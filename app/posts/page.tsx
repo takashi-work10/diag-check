@@ -1,3 +1,4 @@
+// app/posts/page.tsx
 'use client';
 
 import { useState, FormEvent } from 'react';
@@ -26,21 +27,16 @@ type Post = {
 
 export default function PostPage() {
   const { data: session } = useSession();
-  console.log('session data:', session);
+  const queryClient = useQueryClient();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
-
-  // 各投稿の返信表示状態（post.id の配列）
   const [expandedReplies, setExpandedReplies] = useState<string[]>([]);
 
-  const queryClient = useQueryClient();
-
-  const { data: posts, isLoading, isError } = useQuery<Post[]>({
+  const { data: posts = [], isLoading, isError } = useQuery<Post[]>({
     queryKey: ['posts'],
     queryFn: async () => {
       const res = await axios.get('/api/posts');
@@ -95,14 +91,16 @@ export default function PostPage() {
       return;
     }
     createPostMutation.mutate({ title, content });
-    setTitle('');
-    setContent('');
   };
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
     if (!session) {
       alert('ログインしてください。');
+      return;
+    }
+    if (!editTitle.trim() || !editContent.trim()) {
+      alert('タイトルと内容を両方入力してください。');
       return;
     }
     if (editingPostId) {
@@ -150,6 +148,7 @@ export default function PostPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
+            slotProps={{ htmlInput: { maxLength: 500 } }}
           />
           <TextField
             label="内容"
@@ -158,11 +157,16 @@ export default function PostPage() {
             fullWidth
             multiline
             rows={4}
+            slotProps={{ htmlInput: { maxLength: 500 } }}
           />
           <Button
             type="submit"
             variant="contained"
-            disabled={!title.trim() || !content.trim()}
+            disabled={
+              !title.trim() ||
+              !content.trim() ||
+              createPostMutation.status === 'pending'
+            }
             sx={{
               mt: 2,
               backgroundColor: '#CF9FFF',
@@ -202,6 +206,7 @@ export default function PostPage() {
               onChange={(e) => setEditTitle(e.target.value)}
               fullWidth
               required
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
             <TextField
               label="内容"
@@ -211,11 +216,17 @@ export default function PostPage() {
               multiline
               rows={4}
               required
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Button
                 type="submit"
                 variant="contained"
+                disabled={
+                  !editTitle.trim() ||
+                  !editContent.trim() ||
+                  updatePostMutation.status === 'pending'
+                }
                 sx={{ backgroundColor: '#CF9FFF', color: '#fff', textTransform: 'none' }}
               >
                 更新する
@@ -237,7 +248,7 @@ export default function PostPage() {
         投稿一覧
       </Typography>
       <Box sx={{ width: '100%', maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {(posts ?? []).map((post) => (
+        {posts.map((post) => (
           <Paper
             key={post.id}
             sx={{
@@ -247,18 +258,14 @@ export default function PostPage() {
               backgroundColor: '#fff',
             }}
           >
-            {/* 投稿タイトル */}
             <Typography variant="h5" sx={{ mb: 2 }}>
               {post.title}
             </Typography>
-            {/* 投稿本文 */}
             <Typography variant="body1" sx={{ color: '#555', mb: 3 }}>
               {post.content}
             </Typography>
-
-            {/* 著者情報 */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            {post.author.image ? (
+              {post.author.image ? (
                 <Box
                   sx={{
                     position: 'relative',
@@ -268,17 +275,12 @@ export default function PostPage() {
                     overflow: 'hidden',
                   }}
                 >
-                  <Image
-                    src={post.author.image}
-                    alt={post.author.name}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
+                  <Image src={post.author.image} alt={post.author.name} fill style={{ objectFit: 'cover' }} />
                 </Box>
               ) : (
-              <Avatar sx={{ width: 32, height: 32, bgcolor: '#CF9FFF' }}>
-                {post.author.name.charAt(0)}
-              </Avatar>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: '#CF9FFF' }}>
+                  {post.author.name.charAt(0)}
+                </Avatar>
               )}
               <Typography variant="body2" color="textSecondary">
                 By: {post.author.name} ({post.author.email}) –{' '}
@@ -286,33 +288,33 @@ export default function PostPage() {
               </Typography>
             </Box>
 
-            {/* 編集・削除ボタン */}
             {session?.user?.email === post.author.email && (
-            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-              <Button
-                size="small"
-                startIcon={<EditIcon fontSize="small" />}
-                sx={{ textTransform: 'none' }}
-                onClick={() => {
-                  setEditingPostId(post.id);
-                  setEditTitle(post.title);
-                  setEditContent(post.content);
-                }}
-              >
-                編集
-              </Button>
-              <Button
-                size="small"
-                startIcon={<DeleteIcon fontSize="small" />}
-                onClick={() => deletePostMutation.mutate(post.id)}
-                sx={{ textTransform: 'none' }}
-              >
-                削除
-              </Button>
-            </Box>
+              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                <Button
+                  size="small"
+                  startIcon={<EditIcon fontSize="small" />}
+                  sx={{ textTransform: 'none' }}
+                  onClick={() => {
+                    setEditingPostId(post.id);
+                    setEditTitle(post.title);
+                    setEditContent(post.content);
+                  }}
+                  disabled={updatePostMutation.status === 'pending'}
+                >
+                  編集
+                </Button>
+                <Button
+                  size="small"
+                  startIcon={<DeleteIcon fontSize="small" />}
+                  onClick={() => deletePostMutation.mutate(post.id)}
+                  disabled={deletePostMutation.status === 'pending'}
+                  sx={{ textTransform: 'none' }}
+                >
+                  削除
+                </Button>
+              </Box>
             )}
 
-            {/* コメント表示切替 */}
             <Box sx={{ mb: 2 }}>
               {expandedReplies.includes(post.id) ? (
                 <Button
@@ -335,16 +337,12 @@ export default function PostPage() {
               )}
             </Box>
 
-            {/* コメント機能 */}
-            {expandedReplies.includes(post.id) && <Comments postId={post.id} />}
+            {expandedReplies.includes(post.id) && (
+              <Comments postId={post.id} />
+            )}
           </Paper>
         ))}
       </Box>
     </Box>
   );
 }
-
-
-
-
-

@@ -1,3 +1,4 @@
+// app/components/CommentItem.tsx
 'use client';
 
 import { useState, FormEvent } from 'react';
@@ -58,7 +59,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
     },
   });
 
-  // --- 返信機能（既存） ---
+  // --- 返信機能 ---
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState(false);
@@ -81,6 +82,10 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
       alert('ログインしてください。');
       return;
     }
+    if (!replyText.trim()) {
+      alert('返信内容を入力してください。');
+      return;
+    }
     replyMutation.mutate({
       postId,
       content: replyText,
@@ -94,6 +99,10 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
       alert('ログインしてください。');
       return;
     }
+    if (!editText.trim()) {
+      alert('コメント内容を入力してください。');
+      return;
+    }
     updateCommentMutation.mutate({ id: comment.id, content: editText });
   };
 
@@ -104,7 +113,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
         {comment.author.image ? (
           <Box
             sx={{
-              position: 'relative',
+              position: 'relative',  // for Image fill
               width: 40,
               height: 40,
               borderRadius: '50%',
@@ -157,13 +166,15 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
             onChange={(e) => setEditText(e.target.value)}
             fullWidth
             size="small"
+            required
+            slotProps={{ htmlInput: { maxLength: 500 } }}
           />
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
             <Button
               type="submit"
               size="small"
               variant="contained"
-              disabled={updateCommentMutation.status === "pending"}
+              disabled={updateCommentMutation.status === 'pending' || !editText.trim()}
               sx={{ textTransform: 'none' }}
             >
               更新
@@ -209,13 +220,14 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
                   編集
                 </Button>
                 <Button
-                size="small"
-                startIcon={<DeleteIcon fontSize="small" />}
-                onClick={() => deleteCommentMutation.mutate(comment.id)}
-                sx={{ textTransform: 'none' }}
-              >
-                削除
-              </Button>
+                  size="small"
+                  startIcon={<DeleteIcon fontSize="small" />}
+                  onClick={() => deleteCommentMutation.mutate(comment.id)}
+                  disabled={deleteCommentMutation.status === 'pending'}
+                  sx={{ textTransform: 'none' }}
+                >
+                  削除
+                </Button>
               </>
             )}
           </Box>
@@ -237,11 +249,14 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
             onChange={(e) => setReplyText(e.target.value)}
             fullWidth
             size="small"
+            required
+            slotProps={{ htmlInput: { maxLength: 500 } }}
           />
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
             <Button
               type="submit"
               variant="contained"
+              disabled={!replyText.trim() || replyMutation.status === 'pending'}
               sx={{ backgroundColor: '#CF9FFF', color: '#fff', textTransform: 'none' }}
             >
               返信する
