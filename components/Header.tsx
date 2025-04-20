@@ -15,7 +15,7 @@ import {
     MenuItem,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import LoginModal from "../app/components/auth/LoginModal"; 
+import LoginModal from "../app/components/auth/LoginDialog"; 
 
 export default function Header() {
     const { data: session } = useSession();
