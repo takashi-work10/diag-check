@@ -10,44 +10,55 @@ export async function GET() {
             include: { author: true },
             orderBy: { createdAt: 'desc' },
         });
-        return NextResponse.json(posts);
-        } catch (err: unknown) {
-        console.error('[GET /api/posts] error:', err);
-        const message = err instanceof Error ? err.message : 'Failed to fetch posts';
-        return NextResponse.json({ error: message }, { status: 500 });
-        }
+    return NextResponse.json(posts);
+    } catch (err: unknown) {
+    console.error('[GET /api/posts] error:', err);
+    const message = err instanceof Error
+        ? err.message
+        : 'Failed to fetch posts';
+    return NextResponse.json({ error: message }, { status: 500 });
     }
+}
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
-    console.log("Session in POST:", session);
     if (!session?.user?.email) {
-        return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json(
+        { error: 'Not authenticated' },
+        { status: 401 }
+    );
+}
+
+    const { title, content } = await request.json();
+
+  // 必須チェック（任意）
+    if (!title.trim() || !content.trim()) {
+        return NextResponse.json(
+        { error: 'タイトルと内容は必須です' },
+        { status: 400 }
+    );
     }
 
-    const body = await request.json();
-    const { title, content } = body;
-
     const user = await prisma.user.upsert({
-        where: { email: session.user.email },
-        update: {
-            name: session.user.name ?? undefined,
-            image: session.user.image ?? null,
-        },
-        create: {
-            name: session.user.name     || 'No Name',
-            email: session.user.email,
-            image: session.user.image || null,
-        },
+    where: { email: session.user.email },
+    update: {
+        name: session.user.name ?? undefined,
+        image: session.user.image ?? null,
+    },
+    create: {
+        name: session.user.name || 'No Name',
+        email: session.user.email,
+        image: session.user.image || null,
+    },
     });
 
     const post = await prisma.post.create({
         data: {
-            title,
-            content,
-            author: { connect: { id: user.id }},
-        },
-        include: { author: true},
+        title,
+        content,
+        author: { connect: { id: user.id } },
+    },
+    include: { author: true },
     });
 
     return NextResponse.json(post);
