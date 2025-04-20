@@ -5,7 +5,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type Comment = {
   id: string;
@@ -29,6 +31,34 @@ type CommentItemProps = {
 export default function CommentItem({ comment, postId }: CommentItemProps) {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+
+  // --- 編集機能 ---
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState('');
+
+  const updateCommentMutation = useMutation({
+    mutationFn: async ({ id, content }: { id: string; content: string }) => {
+      const res = await axios.patch(`/api/comments/${id}`, { content });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+      setEditing(false);
+    },
+  });
+
+  // --- 削除機能 ---
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axios.delete(`/api/comments/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+    },
+  });
+
+  // --- 返信機能（既存） ---
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState(false);
@@ -51,14 +81,27 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
       alert('ログインしてください。');
       return;
     }
-    replyMutation.mutate({ postId, content: replyText, parentCommentId: comment.id });
+    replyMutation.mutate({
+      postId,
+      content: replyText,
+      parentCommentId: comment.id,
+    });
+  };
+
+  const handleEditSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!session) {
+      alert('ログインしてください。');
+      return;
+    }
+    updateCommentMutation.mutate({ id: comment.id, content: editText });
   };
 
   return (
     <Box sx={{ pl: comment.parentCommentId ? 4 : 0, mb: 3 }}>
       {/* ヘッダー：アバター＋名前＋日時 */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      {comment.author.image ? (
+        {comment.author.image ? (
           <Box
             sx={{
               position: 'relative',
@@ -100,36 +143,91 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
         </Box>
       </Box>
 
-      {/* 本文 */}
-      <Typography variant="body1" sx={{ mt: 1 }}>
-        {comment.content}
-      </Typography>
-
-      {/* 操作ボタン */}
-      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-        <Button
-          size="small"
-          onClick={() => setReplying((f) => !f)}
-          sx={{ textTransform: 'none' }}
+      {/* 編集モード */}
+      {editing ? (
+        <Box
+          component="form"
+          onSubmit={handleEditSubmit}
+          sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}
         >
-          {replying ? '返信フォームを隠す' : '返信'}
-        </Button>
-        <Button size="small" sx={{ textTransform: 'none' }}>
-          いいね
-        </Button>
-      </Box>
+          <TextField
+            multiline
+            rows={2}
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            fullWidth
+            size="small"
+          />
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+            <Button
+              type="submit"
+              size="small"
+              variant="contained"
+              disabled={updateCommentMutation.status === "pending"}
+              sx={{ textTransform: 'none' }}
+            >
+              更新
+            </Button>
+            <Button
+              size="small"
+              onClick={() => setEditing(false)}
+              sx={{ textTransform: 'none' }}
+            >
+              キャンセル
+            </Button>
+          </Box>
+        </Box>
+      ) : (
+        <>
+          {/* 本文 */}
+          <Typography variant="body1" sx={{ mt: 1 }}>
+            {comment.content}
+          </Typography>
+
+          {/* 操作ボタン */}
+          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+            <Button
+              size="small"
+              onClick={() => setReplying((f) => !f)}
+              sx={{ textTransform: 'none' }}
+            >
+              {replying ? '返信フォームを隠す' : '返信'}
+            </Button>
+
+            {/* コメント主だけに表示される「編集」「削除」 */}
+            {session?.user?.email === comment.author.email && (
+              <>
+                <Button
+                  size="small"
+                  startIcon={<EditIcon fontSize="small" />}
+                  onClick={() => {
+                    setEditing(true);
+                    setEditText(comment.content);
+                  }}
+                  sx={{ textTransform: 'none' }}
+                >
+                  編集
+                </Button>
+                <Button
+                size="small"
+                startIcon={<DeleteIcon fontSize="small" />}
+                onClick={() => deleteCommentMutation.mutate(comment.id)}
+                sx={{ textTransform: 'none' }}
+              >
+                削除
+              </Button>
+              </>
+            )}
+          </Box>
+        </>
+      )}
 
       {/* 返信フォーム */}
       {replying && (
         <Box
           component="form"
           onSubmit={handleReplySubmit}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            mt: 2,
-          }}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}
         >
           <TextField
             multiline
@@ -144,11 +242,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
             <Button
               type="submit"
               variant="contained"
-              sx={{
-                backgroundColor: '#CF9FFF',
-                color: '#fff',
-                textTransform: 'none',
-              }}
+              sx={{ backgroundColor: '#CF9FFF', color: '#fff', textTransform: 'none' }}
             >
               返信する
             </Button>
@@ -177,11 +271,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
           </Button>
           {showReplies &&
             comment.replies.map((reply) => (
-              <CommentItem
-                key={reply.id}
-                comment={reply}
-                postId={postId}
-              />
+              <CommentItem key={reply.id} comment={reply} postId={postId} />
             ))}
         </Box>
       )}

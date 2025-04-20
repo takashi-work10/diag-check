@@ -23,14 +23,17 @@ export async function PATCH(
 
   const comment = await prisma.comment.findUnique({
     where: { id: params.id },
+    include: {
+      author: {
+        select: { email: true }
+      }
+    }
   });
+
   if (!comment) {
     return NextResponse.json({ error: "Comment not found" }, { status: 404 });
   }
-  if (
-    comment.authorId !==
-    (await prisma.user.findUnique({ where: { email: session.user.email } }))?.id
-  ) {
+  if (comment.author.email !== session.user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -56,14 +59,17 @@ export async function DELETE(
 
   const comment = await prisma.comment.findUnique({
     where: { id: params.id },
+    include: {
+      author: {
+        select: { email: true }
+      }
+    }
   });
+  
   if (!comment) {
     return NextResponse.json({ error: "Comment not found" }, { status: 404 });
   }
-  if (
-    comment.authorId !==
-    (await prisma.user.findUnique({ where: { email: session.user.email } }))?.id
-  ) {
+  if (comment.author.email !== session.user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 

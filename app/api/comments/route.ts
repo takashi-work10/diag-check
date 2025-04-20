@@ -44,7 +44,7 @@ export async function POST(request: Request) {
             data: {
                 name: session.user.name || 'No Name',
                 email: session.user.email,
-                image: session.user.image,
+                image: session.user.image || null,
             },
         });
     }

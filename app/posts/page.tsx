@@ -90,6 +90,10 @@ export default function PostPage() {
       alert('ログインしてください。');
       return;
     }
+    if (!title.trim() || !content.trim()) {
+      alert('タイトルと内容を両方入力してください。');
+      return;
+    }
     createPostMutation.mutate({ title, content });
     setTitle('');
     setContent('');
@@ -158,6 +162,7 @@ export default function PostPage() {
           <Button
             type="submit"
             variant="contained"
+            disabled={!title.trim() || !content.trim()}
             sx={{
               mt: 2,
               backgroundColor: '#CF9FFF',
@@ -196,6 +201,7 @@ export default function PostPage() {
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
               fullWidth
+              required
             />
             <TextField
               label="内容"
@@ -204,6 +210,7 @@ export default function PostPage() {
               fullWidth
               multiline
               rows={4}
+              required
             />
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Button
