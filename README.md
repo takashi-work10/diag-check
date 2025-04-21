@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📝 MyPostApp
 
-## Getting Started
+Next.js + TypeScript で作った、コミュニティ機能がついた英検学習タイプ診断アプリです。  
+Googleログイン、診断、問い合わせなどの機能が含まれています。
 
-First, run the development server:
+---
+
+## 🚀 セットアップ方法
 
 ```bash
+# 1. パッケージをインストール
+npm install
+
+# 2. 開発サーバーを起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# 3. .env.local に以下の環境変数を設定
+# GoogleログインやDB接続など
+例：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+env
+DATABASE_URL=postgresql://user:pass@localhost:5432/mydb
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=yyy
+NEXTAUTH_SECRET=zzz
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🔐 機能一覧
+投稿作成 / 編集 / 削除
+コメント（親コメント＋子コメント）
+コメント数のカウント表示
+Googleログイン（NextAuth.js）
+診断フォーム（選択式の評価→結果保存）
+お問い合わせフォーム（APIルートに送信）
 
-## Learn More
+🛠️ 技術スタック
+Next.js App Router
+React / TypeScript
+Prisma + MongoDB
+ReactQuery（tanstack）
+MaterialUI（MUI）
+NextAuth.js
+Docker（オプション）
 
-To learn more about Next.js, take a look at the following resources:
+📁 ディレクトリ構成（一部）
+app/
+├── api/           # APIルート（投稿・コメント・診断・認証）
+├── components/    # UIコンポーネント（CommentItem, LoginDialogなど）
+├── posts/         # 投稿ページ
+├── contact/       # お問い合わせページ
+├── diagnosis/     # 診断ページ
+├── result/        # 診断結果表示
+├── profile/       # プロフィールページ
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+📝 補足
+投稿・コメントなどは MongoDBに保存されます。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Googleログインを使うためには、Google Cloud Console で OAuth 認証を設定してください。
 
-## Deploy on Vercel
+開発環境は、dockerで作っています
+本番環境へは Vercel などのホスティングに対応しています。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
