@@ -39,14 +39,9 @@ export async function POST(request: Request) {
     let user = await prisma.user.findUnique({
         where: { email: session.user.email},
     });
+    
     if (!user) {
-        user = await prisma.user.create({
-            data: {
-                name: session.user.name || 'No Name',
-                email: session.user.email,
-                image: session.user.image || null,
-            },
-        });
+        return NextResponse.json({ error: 'User not found in DB' }, { status: 404 });
     }
 
     const comment = await prisma.comment.create({

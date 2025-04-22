@@ -22,7 +22,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    if (!session || !session?.user?.email) {
     return NextResponse.json(
         { error: 'Not authenticated' },
         { status: 401 }
@@ -39,18 +39,13 @@ export async function POST(request: Request) {
     );
     }
 
-    const user = await prisma.user.upsert({
-    where: { email: session.user.email },
-    update: {
-        name: session.user.name ?? undefined,
-        image: session.user.image ?? null,
-    },
-    create: {
-        name: session.user.name || 'No Name',
-        email: session.user.email,
-        image: session.user.image || null,
-    },
+    const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
     });
+    
+        if (!user) {
+        return NextResponse.json({ error: 'ユーザーが存在しません' }, { status: 404 });
+    }
 
     const post = await prisma.post.create({
         data: {
