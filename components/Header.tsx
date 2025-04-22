@@ -20,7 +20,7 @@ import LoginDialog from "../app/components/auth/LoginDialog";
 export default function Header() {
     const { data: session } = useSession();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [LoginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
 
@@ -212,7 +212,7 @@ export default function Header() {
         </Menu>
 
         {/* ログインモーダル */}
-        <LoginDialog open={LoginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
+        <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
         </>
     );
     }
