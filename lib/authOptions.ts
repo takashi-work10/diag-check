@@ -13,10 +13,8 @@ secret: process.env.NEXTAUTH_SECRET,
 callbacks: {
     // 1) JWT を生成・更新するたびに呼ばれる
     async jwt({ token }: { token: JWT }) {
-    console.log("🔑 jwt callback – incoming token.sub:", token.sub);
     if (token.sub) {
         token.id = token.sub;
-        console.log("🔑 jwt callback – assigned token.id:", token.id);
     }
     return token;
     },
@@ -29,10 +27,8 @@ callbacks: {
     session: Session;
     token: JWT;
     }) {
-    console.log("🔐 session callback – before assignment:", session.user);
     if (session.user && token.id) {
         session.user.id = token.id as string;
-        console.log("🔐 session callback – after assignment:", session.user);
     }
     return session;
     },

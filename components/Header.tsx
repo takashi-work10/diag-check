@@ -15,12 +15,12 @@ import {
     MenuItem,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import LoginModal from "../app/components/auth/LoginDialog"; 
+import LoginDialog from "../app/components/auth/LoginDialog"; 
 
 export default function Header() {
     const { data: session } = useSession();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [LoginDialogOpen, setLoginDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
 
@@ -67,7 +67,7 @@ export default function Header() {
             </Button>
             ) : (
             <Button
-                onClick={() => setLoginModalOpen(true)}
+                onClick={() => setLoginDialogOpen(true)}
                 sx={{ textTransform: "none" }}
             >
                 ログイン
@@ -155,7 +155,7 @@ export default function Header() {
                 ) : (
                 <Button
                     color="inherit"
-                    onClick={() => setLoginModalOpen(true)}
+                    onClick={() => setLoginDialogOpen(true)}
                     sx={{
                     fontSize: "1.1rem",
                     textTransform: "none",
@@ -212,7 +212,7 @@ export default function Header() {
         </Menu>
 
         {/* ログインモーダル */}
-        <LoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
+        <LoginDialog open={LoginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
         </>
     );
     }
