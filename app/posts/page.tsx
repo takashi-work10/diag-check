@@ -181,68 +181,6 @@ export default function PostPage() {
         </Box>
       </Paper>
 
-      {/* 編集フォーム */}
-      {editingPostId && (
-        <Paper
-          component="form"
-          onSubmit={handleUpdate}
-          sx={{
-            p: 4,
-            mb: 6,
-            width: '100%',
-            maxWidth: 600,
-            borderRadius: '20px',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
-            backgroundColor: '#fff',
-          }}
-        >
-          <Typography variant="h5" sx={{ mb: 3 }}>
-            投稿編集
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              label="タイトル"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              fullWidth
-              required
-              slotProps={{ htmlInput: { maxLength: 500 } }}
-            />
-            <TextField
-              label="内容"
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              fullWidth
-              multiline
-              rows={4}
-              required
-              slotProps={{ htmlInput: { maxLength: 500 } }}
-            />
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={
-                  !editTitle.trim() ||
-                  !editContent.trim() ||
-                  updatePostMutation.status === 'pending'
-                }
-                sx={{ backgroundColor: '#CF9FFF', color: '#fff', textTransform: 'none' }}
-              >
-                更新する
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => setEditingPostId(null)}
-                sx={{ textTransform: 'none' }}
-              >
-                キャンセル
-              </Button>
-            </Box>
-          </Box>
-        </Paper>
-      )}
-
       {/* 投稿一覧 */}
       <Typography variant="h3" sx={{ fontSize: 36, color: '#FF6F91', mb: 4 }}>
         投稿一覧
@@ -314,7 +252,68 @@ export default function PostPage() {
                 </Button>
               </Box>
             )}
-
+      {/* 編集フォーム */}
+      {editingPostId === post.id  && (
+        <Paper
+          component="form"
+          onSubmit={handleUpdate}
+          sx={{
+            p: 4,
+            mb: 6,
+            width: '100%',
+            maxWidth: 600,
+            borderRadius: '20px',
+            boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+            backgroundColor: '#fff',
+          }}
+        >
+          <Typography variant="h5" sx={{ mb: 3 }}>
+            投稿編集
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="タイトル"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              fullWidth
+              required
+              slotProps={{ htmlInput: { maxLength: 500 } }}
+            />
+            <TextField
+              label="内容"
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+              required
+              slotProps={{ htmlInput: { maxLength: 500 } }}
+            />
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={
+                  !editTitle.trim() ||
+                  !editContent.trim() ||
+                  updatePostMutation.status === 'pending'
+                }
+                sx={{ backgroundColor: '#CF9FFF', color: '#fff', textTransform: 'none' }}
+              >
+                更新する
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setEditingPostId(null)}
+                sx={{ textTransform: 'none' }}
+              >
+                キャンセル
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      )}
+      
             <Box sx={{ mb: 2 }}>
               {expandedReplies.includes(post.id) ? (
                 <Button
