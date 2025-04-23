@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'postId and content are required '}, { status: 400 });
     }
 
-    let user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
         where: { email: session.user.email},
     });
     
