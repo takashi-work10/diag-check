@@ -108,9 +108,9 @@ export default function PostPage() {
     }
   };
 
-  if (!session) return <div>ログインしてください。</div>;
-  if (isLoading) return <div>Loading posts...</div>;
-  if (isError) return <div>Error fetching posts</div>;
+  if (!session) return <Typography sx={{fontSize: "50px", mt: 8}}>ログインしてください。</Typography>;
+  if (isLoading) return <Box>Loading posts...</Box>;
+  if (isError) return <Box>Error fetching posts</Box>;
 
   return (
     <Box
