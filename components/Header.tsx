@@ -46,7 +46,7 @@ export default function Header() {
         </Box>
         <Box sx={{ mb: 2 }}>
             <Link
-            href="/community"
+            href="/posts"
             style={{ textDecoration: "none", color: "#000" }}
             >
             コミュニティ
@@ -60,18 +60,28 @@ export default function Header() {
             お問い合わせ
             </Link>
         </Box>
-        <Box>
+        <Box sx={{ mb: 2 }}>
             {session ? (
-            <Button onClick={handleProfileMenuOpen} sx={{ textTransform: "none" }}>
-                プロフィール
-            </Button>
-            ) : (
-            <Button
+            <Box>
+            <Box sx={{mb: 2}}>
+                <Link
+                href="/profile"
+                style={{ textDecoration: "none", color: "#000" }}
+                >
+                    プロフィール
+                </Link>
+            </Box>
+            <Box
+            onClick={() => signOut()}
+            >
+                ログアウト
+            </Box>
+            </Box>) : (
+            <Box
                 onClick={() => setLoginDialogOpen(true)}
-                sx={{ textTransform: "none" }}
             >
                 ログイン
-            </Button>
+            </Box>
             )}
         </Box>
         </Box>
