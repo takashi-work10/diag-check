@@ -40,8 +40,8 @@ export default function Header() {
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: 2 }}>
         <Box sx={{ mb: 2 }}>
-            <Link href="/" style={{ textDecoration: "none", color: "#000" }}>
-            ホーム
+            <Link href="/diagnosis" style={{ textDecoration: "none", color: "#000" }}>
+            診断テスト
             </Link>
         </Box>
         <Box sx={{ mb: 2 }}>

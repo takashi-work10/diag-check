@@ -47,8 +47,8 @@ type QuestionItemProps = {
           </FormLabel>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center",flexWrap: "nowrap", mt: 1,}}>
             <Box>
-              <Typography variant="body2" sx={{ mr: "8px", color: "#a0ff8d", fontWeight: "bold" }}>
-                賛成する
+              <Typography variant="body2" sx={{ color: "#a0ff8d", fontWeight: "bold", fontSize: { xs: "13px", sm: "25px" } }}>
+                賛成
               </Typography>
             </Box>
             <Box>
@@ -59,8 +59,8 @@ type QuestionItemProps = {
               />
             </Box>
             <Box>
-              <Typography variant="body2" sx={{ ml: "8px", color: "#d18dff", fontWeight: "bold" }}>
-                反対する
+              <Typography variant="body2" sx={{color: "#d18dff", fontWeight: "bold", fontSize: { xs: "13px", sm: "25px" }  }}>
+                反対
               </Typography>
             </Box>
           </Box>

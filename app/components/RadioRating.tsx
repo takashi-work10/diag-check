@@ -29,13 +29,15 @@ const RadioRating: React.FC<RadioRatingProps> = ({
         <Radio
           key={option.value}
           value={option.value}
+          disableRipple
+          sx={{ p: 0 }}
           icon={
             <RadioButtonUncheckedIcon
-              sx={{ fontSize: { xs: option.size * 0.4, sm: option.size * 0.7, md: option.size * 1.1 }, color: option.color }}
+              sx={{ fontSize: { xs: option.size * 0.4, sm: option.size * 0.7, md: option.size * 1.1 }, color: option.color, p: 0 }}
             />
           }
           checkedIcon={
-            <SvgIcon sx={{ fontSize: { xs: option.size * 0.4, sm: option.size * 0.7, md: option.size * 1.1 }, color: option.color, fill: option.color }}>
+            <SvgIcon sx={{ fontSize: { xs: option.size * 0.4, sm: option.size * 0.7, md: option.size * 1.1 }, color: option.color, fill: option.color, p: 0 }}>
               <circle cx="12" cy="12" r="10" />
               <path d="M8 12l3 3 6-6" stroke="white" strokeWidth="2" fill="none" />
             </SvgIcon>

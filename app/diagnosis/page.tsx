@@ -84,7 +84,7 @@ export default function Diagnosis() {
                 forwardRef={(el) => {
                     questionRefs.current[i] = el;
                 }}
-                style={{ margin: "0 auto", textAlign: "center" }}
+                style={{ margin: "0", textAlign: "center", padding: "0" }}
                 />
             ))}
             </Box>
@@ -101,5 +101,5 @@ export default function Diagnosis() {
             </Box>
         </Box>
     </Container>
-  );
+);
 }
