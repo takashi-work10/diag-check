@@ -111,7 +111,7 @@ export default function Comments({ postId }: { postId: string }) {
             fullWidth
             size="small"
             required
-            slotProps={{ htmlInput: { maxLength: 500 } }}
+            slotProps={{ htmlInput: { maxLength: 200 } }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button

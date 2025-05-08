@@ -31,6 +31,7 @@ return (
         <input
             type="text"
             value={name}
+            maxLength={20}
             onChange={(e) => setName(e.target.value)}
             style={{ border: "solid 1px #ccc", width: "100%", padding: "8px", marginTop: "5px" }}
             required
@@ -44,6 +45,7 @@ return (
         <input
             type="email"
             value={email}
+            maxLength={100}
             onChange={(e) => setEmail(e.target.value)}
             style={{ border: "solid 1px #ccc", width: "100%", padding: "8px", marginTop: "5px" }}
             required
@@ -55,6 +57,7 @@ return (
         メッセージ：
         <textarea
             value={message}
+            maxLength={500}
             onChange={(e) => setMessage(e.target.value)}
             style={{ border: "solid 1px #ccc", width: "100%", padding: "8px", marginTop: "5px" }}
             rows={5}

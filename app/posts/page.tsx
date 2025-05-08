@@ -163,7 +163,7 @@ export default function PostPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
-            slotProps={{ htmlInput: { maxLength: 500 } }}
+            slotProps={{ htmlInput: { maxLength: 50 } }}
           />
           <TextField
             label="内容"
@@ -172,7 +172,7 @@ export default function PostPage() {
             fullWidth
             multiline
             rows={4}
-            slotProps={{ htmlInput: { maxLength: 500 } }}
+            slotProps={{ htmlInput: { maxLength: 200 } }}
           />
           <Button
             type="submit"
@@ -292,7 +292,7 @@ export default function PostPage() {
               onChange={(e) => setEditTitle(e.target.value)}
               fullWidth
               required
-              slotProps={{ htmlInput: { maxLength: 500 } }}
+              slotProps={{ htmlInput: { maxLength: 50 } }}
             />
             <TextField
               label="内容"
@@ -302,7 +302,7 @@ export default function PostPage() {
               multiline
               rows={4}
               required
-              slotProps={{ htmlInput: { maxLength: 500 } }}
+              slotProps={{ htmlInput: { maxLength: 200 } }}
             />
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Button

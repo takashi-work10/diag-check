@@ -167,7 +167,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
             fullWidth
             size="small"
             required
-            slotProps={{ htmlInput: { maxLength: 500 } }}
+            slotProps={{ htmlInput: { maxLength: 200 } }}
           />
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
             <Button
@@ -250,7 +250,7 @@ export default function CommentItem({ comment, postId }: CommentItemProps) {
             fullWidth
             size="small"
             required
-            slotProps={{ htmlInput: { maxLength: 500 } }}
+            slotProps={{ htmlInput: { maxLength: 200 } }}
           />
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
             <Button
