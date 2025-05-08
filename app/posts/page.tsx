@@ -10,7 +10,8 @@ import CommentCount from '../components/CommentCount';
 import { Box, Paper, Typography, TextField, Button, Avatar } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Image from 'next/image';
+import Image from 'next/image'; 
+import LoginDialog from '../components/auth/LoginDialog';
 
 type Post = {
   id: string;
@@ -35,6 +36,7 @@ export default function PostPage() {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [expandedReplies, setExpandedReplies] = useState<string[]>([]);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const { data: posts = [], isLoading, isError } = useQuery<Post[]>({
     queryKey: ['posts'],
@@ -108,9 +110,22 @@ export default function PostPage() {
     }
   };
 
-  if (!session) return <Typography sx={{fontSize: "50px", mt: 8}}>ログインしてください。</Typography>;
-  if (isLoading) return <Box>Loading posts...</Box>;
-  if (isError) return <Box>Error fetching posts</Box>;
+  if (!session) { 
+    return (
+      <Box sx={{ minHeight: "100vh" }}>
+      <Typography 
+        component="div" 
+        sx={{fontSize: "50px", mt: 8, cursor: "pointer", textDecoration: "underline", color: "blue"}} 
+        onClick={() => setLoginDialogOpen(true)}
+        >
+          ログインしてください。
+      </Typography>
+      <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
+    </Box>
+    );
+  }
+  if (isLoading) return <Typography sx={{fontSize: "50px", mt: 8}}>Loading posts...</Typography>;
+  if (isError) return <Typography sx={{fontSize: "50px", mt: 8}}>Error fetching posts</Typography>;
 
   return (
     <Box
