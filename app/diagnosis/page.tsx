@@ -93,7 +93,7 @@ export default function Diagnosis() {
                     variant="contained"
                     onClick={handleSubmit}
                     disabled={mutation.status === "pending"}
-                    sx={{ fontSize: "30px", backgroundColor: "#CF9FFF", color: "#fff" }}
+                    sx={{ backgroundColor: "#CF9FFF", color: "#fff", fontSize: { xs: "15px", sm: "30px" } }}
                 >
                     {mutation.status === "pending" ? "送信中..." : "結果を見る→"}
             
