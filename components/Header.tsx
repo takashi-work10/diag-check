@@ -40,7 +40,7 @@ export default function Header() {
     // モバイル用 Drawer の内容
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: {sm: 2} }}>
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ my: 2 }}>
             <Link href="/diagnosis" style={{ textDecoration: "none", color: "#000" }}>
             診断テスト
             </Link>
@@ -195,6 +195,7 @@ export default function Header() {
 
         {/* モバイル用 Drawer */}
         <Drawer
+            anchor="right"
             variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
