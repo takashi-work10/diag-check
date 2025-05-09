@@ -43,7 +43,7 @@ export default function Header() {
         <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: {sm: 2} }}>
         <Box sx={{display: "flex", justifyContent: "space-around", alignItems: "center", mt: 3}}>
             <Link href="/diagnosis">
-                <Button variant="contained" color="secondary" sx={{borderRadius: "30px", fontSize: "18px"}} >テストを受ける</Button>
+                <Button variant="contained" sx={{borderRadius: "30px", fontSize: "18px", backgroundColor: "#CF9FFF", color: "#fff",}} >テストを受ける</Button>
             </Link>
             <CloseIcon />
         </Box>
