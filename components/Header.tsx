@@ -63,6 +63,14 @@ export default function Header() {
         </Box>
         <Box sx={{ mb: 2 }}>
             <Link
+            href="/articles"
+            style={{ textDecoration: "none", color: "#000" }}
+            >
+            合格の極意
+            </Link>
+        </Box>
+        <Box sx={{ mb: 2 }}>
+            <Link
             href="/contact"
             style={{ textDecoration: "none", color: "#000" }}
             >
