@@ -13,6 +13,7 @@ import {
     Avatar,
     Menu,
     MenuItem,
+    Typography
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import LoginDialog from "../app/components/auth/LoginDialog"; 
@@ -38,7 +39,7 @@ export default function Header() {
 
     // モバイル用 Drawer の内容
     const drawer = (
-        <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: 2 }}>
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: {sm: 2} }}>
         <Box sx={{ mb: 2 }}>
             <Link href="/diagnosis" style={{ textDecoration: "none", color: "#000" }}>
             診断テスト
@@ -95,7 +96,7 @@ export default function Header() {
             top: 0,
             left: 0,
             width: "100%",
-            px: { xs: "15px", sm: "20px" },
+            px: { xs: "0", sm: "20px" },
             background: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
             borderBottomLeftRadius: "20px",
             borderBottomRightRadius: "20px",
@@ -178,10 +179,16 @@ export default function Header() {
             </Box>
 
             {/* 小さい画面用：ハンバーガーメニュー */}
-            <Box sx={{ display: { xs: "block", sm: "none" } }}>
-                <IconButton color="inherit" onClick={handleDrawerToggle}>
-                <MenuIcon />
-                </IconButton>
+            <Box sx={{ display: { xs: "flex", sm: "none" }, justifyContent: "space-between", width: "100%", p: 0 }}>
+                <Link href="/" style={{display: "flex", alignItems: "center", textDecoration: "none" }}>
+                    <img src="/favicon.ico" className="App-logo" alt="logo" style={{width: "8%", marginRight: "5px" }} />
+                    <Typography sx={{fontSize: "11px", fontWeight: "bold", color: "white" }}>英検学習タイプ診断</Typography>
+                </Link>
+                <Box>
+                    <IconButton color="inherit" onClick={handleDrawerToggle}>
+                    <MenuIcon />
+                    </IconButton>
+                </Box>
             </Box>
             </Toolbar>
         </AppBar>
