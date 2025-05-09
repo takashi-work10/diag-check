@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import LoginDialog from "../app/components/auth/LoginDialog"; 
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function Header() {
     const { data: session } = useSession();
@@ -40,6 +41,13 @@ export default function Header() {
     // モバイル用 Drawer の内容
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: {sm: 2} }}>
+        <Box sx={{display: "flex", justifyContent: "space-around", alignItems: "center", mt: 3}}>
+            <Link href="/diagnosis">
+                <Button variant="contained" color="secondary" sx={{borderRadius: "30px", fontSize: "18px"}} >テストを受ける</Button>
+            </Link>
+            <CloseIcon />
+        </Box>
+        <Box sx={{ mt: 3, borderBottom: "1px solid #e6e6e6" }} />
         <Box sx={{ my: 2 }}>
             <Link href="/diagnosis" style={{ textDecoration: "none", color: "#000" }}>
             診断テスト
