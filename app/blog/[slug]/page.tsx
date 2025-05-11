@@ -32,7 +32,7 @@ export default function BlogPostPage({ params }: Params) {
   const post = getPost(params.slug);
   const html = marked(post.content);
   return (
-    <main className="prose mx-auto p-4">
+    <main style={{marginTop: "100px"}}>
       <h1>{post.metadata.title}</h1>
       <div dangerouslySetInnerHTML={{ __html: html }} />
     </main>
