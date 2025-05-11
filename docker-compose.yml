@@ -24,7 +24,6 @@ services:
     volumes:
       - ./:/app:cached
       - next_data:/app/.next
-      - node_data:/app/node_modules
 
 volumes:
   mongo_data:
